@@ -44,11 +44,33 @@ m_abs = [0.1, 0.2, 0.1];
 % Absorber property matrix of rows, following the convention [floor, absorber mass,
 % stiffness]. 
 
-absorber = [ 3, m_abs(1), m_abs(3) * w0(1)^2; % floor 3 tuned to mode 1
+absorbers = [ 3, m_abs(3), m_abs(3) * w0(1)^2; % floor 3 tuned to mode 1
     2, m_abs(2), m_abs(2) * w0(3)^2; % floor 2 tuned to mode 3
     1, m_abs(1), m_abs(1) * w0(2)^2;]; % floor 1 tuned to mode 2
 
+% Add the absorber properties to M and K matrices one at a time
 
+for j = 1:size(absorbers, 1)
+
+    floor = absorbers(j, 1);
+    absorber_mass = absorbers(j, 2);
+    absorber_stiffness = absorbers(j, 3);
+
+    i = size(M, 1) + 1; % index of absorber DOF
+
+    M(i, i) = absorber_mass; 
+    K(i, i) = absorber_stiffness;
+    K(floor, floor) = K(floor, floor) + absorber_stiffness;
+    K(i, floor) = -absorber_stiffness;
+    K(floor, i) = -absorber_stiffness;
+
+end
+
+N = size(M, 1); % should be 6 DOF with 3 floors and 3 absorbers
+
+F = zeros(N, 1); % force vector
+
+F(1) = 1; % unit force applied to floor 1
 
 [V,D] = eig(K,M);
 syms w;
