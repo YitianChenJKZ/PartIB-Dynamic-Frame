@@ -31,8 +31,24 @@ k = (24*E*I)/(L*L*L); % static stiffness for each floor
 M = m*eye(N); % create the mass matrix
 K = k*[2 -1 0;-1 2 -1;0 -1 1]; % create the stiffness matrix
 
-% To include vibration absorbers, you will need to modify
-%   the mass and stiffness matrices (above)
+% Modified the M and K matrices above to include the effect of mass
+% absorbers on each floor
+
+% Natural frequencies of frame without absorbers sorted by lowest to
+% highest
+w0 = sort(sqrt(eig(K, M)));
+
+% Absorber mass at each floor
+m_abs = [0.1, 0.2, 0.1];
+
+% Absorber property matrix of rows, following the convention [floor, absorber mass,
+% stiffness]. 
+
+absorber = [ 3, m_abs(1), m_abs(3) * w0(1)^2; % floor 3 tuned to mode 1
+    2, m_abs(2), m_abs(2) * w0(3)^2; % floor 2 tuned to mode 3
+    1, m_abs(1), m_abs(1) * w0(2)^2;]; % floor 1 tuned to mode 2
+
+
 
 [V,D] = eig(K,M);
 syms w;
