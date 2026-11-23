@@ -85,7 +85,7 @@ modeshapes = V
 
 B = K - ((w*w)*M); 
 % harmonic solution for unit force at floor 1
-disp = (inv(B))*[1;0;0];
+disp = (inv(B))*F;
 
 %start of ezplot section
 if (plottype == 1)
@@ -111,7 +111,7 @@ all_disp = [];
 for w = 1:130;
   B = K - ((w*w)*M); 
   % harmonic solution for unit force at floor 1
-  disp = (inv(B))*[1;0;0];
+  disp = (inv(B))*F;
   all_disp = [all_disp disp];
 end
 w = 1:130;
